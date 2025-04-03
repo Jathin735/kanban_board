@@ -1,59 +1,88 @@
-.App {
-  text-align: center;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
+/* ✅ Global Container */
 .container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  @apply flex justify-center items-center mx-auto p-8 min-h-screen bg-gradient-to-r from-indigo-400 to-purple-600 text-white;
 }
-input, select, button {
-  display: block;
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
+
+/* ✅ Headers */
+h2 {
+  @apply text-4xl font-extrabold text-white mb-8 mt-4 text-center;
 }
+
+form {
+  @apply bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full;
+}
+
+input, select {
+  @apply border border-gray-300 p-3 rounded-lg w-full mb-4 focus:outline-none focus:ring-2 focus:ring-green-500;
+}
+
 button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
+  @apply w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition duration-300 ease-in-out;
+}
+button:disabled {
+  @apply bg-gray-400 cursor-not-allowed;
 }
 
+/* ✅ Dashboard Layout */
+.dashboard-container {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* ✅ Board Styling */
+.board-container {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+.board-column {
+  @apply bg-gray-100 p-6 rounded-lg min-h-[500px] shadow-lg;
+}
+p {
+  @apply text-center mt-8 mb-4 text-white;
+}
+
+a {
+  @apply text-yellow-300 hover:underline;
+}
+/* ✅ Task Card Styling */
+.task-card {
+  @apply bg-white p-4 rounded-lg shadow-lg mb-4 text-black;
+}
+.task-card h4 {
+  @apply font-bold text-lg;
+}
+.task-card p {
+  @apply text-sm text-gray-500;
+}
+
+/* ✅ Drag and Drop Effect */
+.dragging {
+  @apply bg-blue-200;
+}
+/* Select Customization */
+select {
+  @apply appearance-none cursor-pointer;
+}
+
+/* Placeholder and Active Effects */
+input::placeholder {
+  @apply text-gray-400;
+}
+
+button:active {
+  @apply transform scale-95;
+}
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .board-container {
+    @apply grid-cols-1;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .board-container {
+    @apply grid-cols-2;
   }
 }
