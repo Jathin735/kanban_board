@@ -1,9 +1,8 @@
-// src/pages/UserDashboard.js
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from '../api/axios';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import TaskForm from '../components/TaskForm';
-import Navbar from '../components/Navbar';  // Import Navbar component
+
 
 const UserDashboard = () => {
   const [tasks, setTasks] = useState({
@@ -12,14 +11,10 @@ const UserDashboard = () => {
     'Completed': []
   });
   const userId = localStorage.getItem('userId');
-  const userRole = localStorage.getItem('userRole');  // Assuming the role is stored in localStorage
 
   const fetchUserTasks = useCallback(async () => {
     try {
-      const response = userRole === 'admin' 
-        ? await axios.get(`/tasks`)  // Admins can see all tasks
-        : await axios.get(`/tasks/user/${userId}`);  // Users can see only their tasks
-
+      const response = await axios.get(`/tasks/user/${userId}`);
       const organizedTasks = {
         'To Do': response.data.filter(task => task.status === 'To Do'),
         'In Progress': response.data.filter(task => task.status === 'In Progress'),
@@ -29,7 +24,7 @@ const UserDashboard = () => {
     } catch (error) {
       console.error('Error fetching user tasks:', error);
     }
-  }, [userId, userRole]);
+  }, [userId]);
 
   useEffect(() => {
     fetchUserTasks();
@@ -54,53 +49,39 @@ const UserDashboard = () => {
   };
 
   return (
-    <div>
-      <Navbar />  {/* Add Navbar here */}
-      <div className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold mb-4">User Dashboard</h2>
-        {userRole === 'admin' && <TaskForm fetchUserTasks={fetchUserTasks} />}  {/* Admin can add tasks */}
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-3 gap-4">
-            {Object.keys(tasks).map((status) => (
-              <Droppable droppableId={status} key={status}>
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps} className="bg-gray-100 p-4 rounded-lg min-h-[400px]">
-                    <h3 className="text-xl font-semibold mb-4">{status}</h3>
-                    {tasks[status].map((task, index) => (
-                      <Draggable key={task._id} draggableId={task._id} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="bg-white p-4 rounded-lg shadow mb-2"
-                          >
-                            <h4 className="font-bold">{task.title}</h4>
-                            <p>{task.description}</p>
-                            <p className="text-sm text-gray-500">Deadline: {new Date(task.deadline).toLocaleString()}</p>
-                            {userRole === 'admin' && (  // Admin can change task status
-                              <button 
-                                className="mt-2 bg-blue-500 text-white p-2 rounded"
-                                onClick={() => handleDragEnd({ 
-                                  destination: { droppableId: 'In Progress', index: 0 }, 
-                                  source: { droppableId: 'To Do', index: 0 }
-                                })}
-                              >
-                                Move to In Progress
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            ))}
-          </div>
-        </DragDropContext>
-      </div>
+    <div className="container mx-auto p-4">
+      <h2 className="text-3xl font-bold mb-4">User Dashboard</h2>
+      <TaskForm fetchUserTasks={fetchUserTasks} />
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="grid grid-cols-3 gap-4">
+          {Object.keys(tasks).map((status) => (
+            <Droppable droppableId={status} key={status}>
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps} className="bg-gray-100 p-4 rounded-lg min-h-[400px]">
+                  <h3 className="text-xl font-semibold mb-4">{status}</h3>
+                  {tasks[status].map((task, index) => (
+                    <Draggable key={task._id} draggableId={task._id} index={index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className="bg-white p-4 rounded-lg shadow mb-2"
+                        >
+                          <h4 className="font-bold">{task.title}</h4>
+                          <p>{task.description}</p>
+                          <p className="text-sm text-gray-500">Deadline: {new Date(task.deadline).toLocaleString()}</p>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
     </div>
   );
 };
