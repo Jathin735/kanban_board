@@ -8,21 +8,20 @@ import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 const App = () => {
-
   return (
-    
     <Router>
       <Routes>
-
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
         {/* Protected Routes */}
-        {/* <Route element={<ProtectedRoute role="admin" />}> */}
+        <Route element={<ProtectedRoute role="admin" />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        {/* </Route> */}
-        {/* <Route element={<ProtectedRoute role="user" />}> */}
+        </Route>
+
+        <Route element={<ProtectedRoute role="user" />}>
           <Route path="/user-dashboard" element={<UserDashboard />} />
-        {/* </Route> */}
+        </Route>
       </Routes>
     </Router>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import Navbar from '../components/Navbar'; // ✅ Import Navbar
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -15,7 +15,8 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/users');
-      setUsers(response.data);
+      const normalUsers = response.data.filter((user) => user.role !== 'admin');
+      setUsers(normalUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -55,55 +56,72 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-3xl font-bold mb-4">Admin Dashboard</h2>
+    <>
+      <Navbar /> {/* ✅ Navbar shown after login */}
+      <div className="container">
+        <h2>Admin Dashboard</h2>
 
-      {!selectedUser ? (
-        <div>
-          <h3 className="text-xl font-semibold mb-2">Select a User</h3>
-          <ul>
-            {users.map((user) => (
-              <li key={user._id}>
-                <button onClick={() => handleUserSelection(user)} className="text-blue-500 underline">
+        {!selectedUser ? (
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Select a User</h3>
+            <div className="flex flex-wrap gap-4">
+              {users.map((user) => (
+                <button
+                  key={user._id}
+                  onClick={() => handleUserSelection(user)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow transition-all duration-300"
+                >
                   {user.name}
                 </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <div>
-          <button onClick={() => setSelectedUser(null)} className="text-red-500 mb-4">Back to User List</button>
-          <h3 className="text-xl font-semibold mb-2">{selectedUser.name}'s Board</h3>
-
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-2">Assign Task</h3>
-            <input
-              type="text"
-              placeholder="Task Title"
-              value={taskTitle}
-              onChange={(e) => setTaskTitle(e.target.value)}
-              className="border p-2 rounded mr-2"
-            />
-            <button
-              onClick={handleAssignTask}
-              className="bg-blue-500 text-white p-2 rounded"
-            >
-              Assign Task
-            </button>
+              ))}
+            </div>
           </div>
+        ) : (
+          <div className="mt-8">
+            <button
+              onClick={() => setSelectedUser(null)}
+              className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded mb-6"
+            >
+              ← Back to User List
+            </button>
 
-          <h3 className="text-xl font-semibold mb-2">Tasks</h3>
-          <ul className="list-disc pl-5">
-            {tasks.map((task) => (
-              <li key={task._id}>
-                <span className="font-semibold">{task.title}</span> - {task.status}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+            <h3 className="text-2xl font-bold mb-4">{selectedUser.name}'s Task Board</h3>
+
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-2">Assign a New Task</h4>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter Task Title"
+                  value={taskTitle}
+                  onChange={(e) => setTaskTitle(e.target.value)}
+                  className="input w-full"
+                />
+                <button
+                  onClick={handleAssignTask}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Assign
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-2">Tasks</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {tasks.map((task) => (
+                  <div key={task._id} className="task-card">
+                    <h4>{task.title}</h4>
+                    <p>Status: <span className="text-blue-600 font-medium">{task.status}</span></p>
+                  </div>
+                ))}
+                {tasks.length === 0 && <p>No tasks assigned yet.</p>}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
